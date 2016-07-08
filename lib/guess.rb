@@ -4,17 +4,13 @@ class Guess
   attr_reader :response,
               :card
 
-  def initialize(user_response, user_card)
-    @response = user_response
-    @card = user_card
+  def initialize(response, card)
+    @response = response
+    @card = card
   end
 
   def correct?
-    if @response == card.answer
-      true
-    else
-      false
-    end
+    response.downcase == card.answer.downcase
   end
 
   def feedback
@@ -23,11 +19,5 @@ class Guess
     else
       "Incorrect."
     end
-    # alternative method structure without DRY:
-    # if response == card.answer
-    #   'Correct!'
-    # else
-    #   'Incorrect.'
-    # end
   end
 end

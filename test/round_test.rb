@@ -36,10 +36,9 @@ class RoundTest < Minitest::Test
 
     round = Round.new(deck)
 
-    current_card = round.current_card
     assert_equal card_1, round.current_card
+    round.record_guess("Juneau")
 
-    round.record_guess("15")
     assert_equal card_2, round.current_card
   end
 
@@ -60,7 +59,6 @@ class RoundTest < Minitest::Test
     assert_equal "93,000,000", round.guesses.last.response
   end
 
-
   def test_it_counts_guesses
     card_1 = Card.new("What is the capital of Alaska?", "Juneau")
     card_2 = Card.new("Approximately how many miles are in one astronomical unit?", "93,000,000")
@@ -71,10 +69,15 @@ class RoundTest < Minitest::Test
 
     round.record_guess("Juneau")
     assert_equal 1, round.guesses.count
-    end
 
-  def test_it_logs_feedback_as_correct_or_not
+    round.record_guess("93,000,000")
+    assert_equal 2, round.guesses.count
 
+    round.record_guess("50")
+    assert_equal 3, round.guesses.count
+  end
+
+  def test_it_logs_guess_as_correct_or_not
     card_1 = Card.new("What is the capital of Alaska?", "Juneau")
     card_2 = Card.new("Approximately how many miles are in one astronomical unit?", "93,000,000")
 
@@ -82,14 +85,15 @@ class RoundTest < Minitest::Test
 
     round = Round.new(deck)
 
+    assert_equal card_1, deck.cards.first
     round.record_guess("Juneau")
-    # binding.pry
-
     assert_equal "Correct!", round.guesses.first.feedback
+
+    round.record_guess("9")
+    assert_equal "Incorrect.", round.guesses.last.feedback
   end
 
   def test_it_counts_number_of_correct_guesses
-
     card_1 = Card.new("What is the capital of Alaska?", "Juneau")
     card_2 = Card.new("Approximately how many miles are in one astronomical unit?", "93,000,000")
 
@@ -104,52 +108,17 @@ class RoundTest < Minitest::Test
     assert_equal 2, round.number_correct
   end
 
-  # def test_
+  def test_it_calculates_correct_guesses_by_percent
+    card_1 = Card.new("What is the capital of Alaska?", "Juneau")
+    card_2 = Card.new("Approximately how many miles are in one astronomical unit?", "93,000,000")
+
+    deck = Deck.new([card_1, card_2])
+
+    round = Round.new(deck)
+
+    round.record_guess("Juneau")
+    round.record_guess("11")
+
+    assert_equal 50, round.percent_correct
+  end
 end
-
-# round.current_card
-# => #<Card:0x007ffdf1820a90 @answer="93,000,000", @question="Approximately how many miles are in one astronomical unit?">
-
-# round.record_guess("2")
-# => #<Guess:0x007ffdf19c8a00 @card=#<Card:0x007ffdf1820a90 @answer="93,000,000", @question="Approximately how many miles are in one astronomical unit?">, @response="2">
-#
-# round.guesses.count
-# => 2
-#
-# round.guesses.last.feedback
-# => "Incorrect."
-#
-# round.number_correct
-# => 1
-#
-# round.percent_correct
-# => 50
-
-
-# card_1.question => "what is life?"
-# # if it were attr_accessor
-# card_1.question = "another question"
-# card_1.question => "another question"
-
-
-
-# assert_equal "Approximately how many miles are in one astronomical unit?", round.guesses.last.card.question
-
-# def test_it_records_multiple_guesses_into_an_array
-#   card_1 = Card.new("What is the capital of Alaska?", "Juneau")
-#   card_2 = Card.new("Approximately how many miles are in one astronomical unit?", "93,000,000")
-#
-#   deck = Deck.new([card_1, card_2])
-#
-#   round = Round.new(deck)
-#
-#   round.record_guess("Juneau")
-#   round.record_guess("93,000,000")
-#
-#   # require "pry"; binding.pry
-#   # assert_equal ["Juneau", "93,000,000"], round.guesses
-#   # assert_equal "Juneau", round.guesses.last.ans
-#   # round.record_guess("93,000,000")
-#   # assert_equal ["Juneau", "93,000,000"], round.guesses
-#   # refute_equal ["Juneau"], round.guesses
-# end
